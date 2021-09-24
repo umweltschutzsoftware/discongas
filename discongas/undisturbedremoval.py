@@ -2,7 +2,7 @@ import math
 from discongas.util.inputoutput import *
 from discongas.util.roof import *
 
-def symmetricpitchedroofs(a, H_Dach, dridge, nominalheatoutput=400, ratedthermalinput=1, flatroof=False):
+def symmetricpitchedroof(a, H_Dach, dridge, nominalheatoutput=400, ratedthermalinput=1, flatroof=False):
   """
   Outlet height for symmetric pitched roofs.
 
@@ -37,7 +37,7 @@ def symmetricpitchedroofs(a, H_Dach, dridge, nominalheatoutput=400, ratedthermal
 
   return round(H_S1 + H_Ü, 1)
 
-def flatroofs(H_First, b, nominalheatoutput=400, ratedthermalinput=1):
+def flatroof(H_First, b, nominalheatoutput=400, ratedthermalinput=1):
   """
   Outlet height for flat roofs.
 
@@ -48,7 +48,7 @@ def flatroofs(H_First, b, nominalheatoutput=400, ratedthermalinput=1):
 
   :return: height H_A1
   """
-  H_A1 = symmetricpitchedroofs(0, 0, b, nominalheatoutput, ratedthermalinput, True)
+  H_A1 = symmetricpitchedroof(0, 0, b, nominalheatoutput, ratedthermalinput, True)
   H_Ü = additiveterm(nominalheatoutput, ratedthermalinput)
   H_A1F = round(1.3*((H_First**2)**(1./3.))+H_Ü,1)
   return min(H_A1, H_A1F)
