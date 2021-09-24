@@ -50,7 +50,7 @@ def symmetricpitchedroofs(a, H_Dach, b, nominalheatoutput=400, ratedthermalinput
   :param nominalheatoutput: Nominal heat output (in kW):
   :param ratedthermalinput: Rated thermal input (in MW):
 
-  :return: a tuple (gamma, f)
+  :return: height H_A1
   """
   alpha = roofangle(H_Dach, b/2)
 
