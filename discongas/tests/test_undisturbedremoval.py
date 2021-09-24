@@ -1,21 +1,5 @@
 from discongas.undisturbedremoval import *
 
-def test_roofpitchcorrection():
-  # test of exact values according to table 2
-  assert(roofpitchcorrection(20) == (0, 0.85))
-  assert(roofpitchcorrection(30) == (0, 0.70))
-  assert(roofpitchcorrection(45) == (10, 0.50))
-  assert(roofpitchcorrection(60) == (20, 0.45))
-
-  # test of values less than 20 or greater than 60
-  assert(roofpitchcorrection(19) == (0, 0))
-  assert(roofpitchcorrection(61) == (20, 0.45))
-
-  # test of interpolation 
-  assert(roofpitchcorrection(21) == (0, 0.83))
-  assert(roofpitchcorrection(37.5) == (5, 0.6))
-  assert(roofpitchcorrection(50) == (13.33, 0.48))
-
 def test_symmetricpitchedroofs():
   # test according to annax A1.2
   # X1
@@ -30,3 +14,8 @@ def test_symmetricpitchedroofs():
 
   # test with a roof angle < 20
   assert(symmetricpitchedroofs(0, 2.45, 15.6) == 0.8)
+
+def test_flatroofs():
+  # test according to annax A2.1
+  # only the rooftop building is considered
+  assert(flatroofs(4, 4) == 1.1)
