@@ -15,3 +15,18 @@ def test_roofpitchcorrection():
   assert(roofpitchcorrection(21) == (0, 0.83))
   assert(roofpitchcorrection(37.5) == (5, 0.6))
   assert(roofpitchcorrection(50) == (13.33, 0.48))
+
+def test_symmetricpitchedroofs():
+  # test according to annax A1.2
+  # X1
+  assert(symmetricpitchedroofs(0, 3.7, 11.3) == 0.4)
+  # X2 
+  assert(symmetricpitchedroofs(5.7, 3.7, 11.3) == 2.8)
+  # X3 
+  assert(symmetricpitchedroofs(0, 3.7, 11.3) == 0.4)
+
+  # test with a roof angle == 20
+  assert(symmetricpitchedroofs(0, 3.7, 11.3) == 0.4)
+
+  # test with a roof angle < 20
+  assert(symmetricpitchedroofs(0, 2.45, 15.6) == 0.8)

@@ -1,3 +1,7 @@
+import math
+from discongas.util.inputoutput import *
+from discongas.util.roof import *
+
 def roofpitchcorrection(alpha):
   """
   Calculate the roof pitch correction gamma and factor f as a function of the roof pitch alpha.
@@ -35,4 +39,35 @@ def roofpitchcorrection(alpha):
     f = 0.45
     
   return (gamma, f)
+
+def symmetricpitchedroofs(a, H_Dach, b, nominalheatoutput=400, ratedthermalinput=1):
+  """
+  Outlet height for symmetric pitched roofs.
+
+  :param a: horizontal distance beweent the centre of the outlet cross-section and the ridge (in m):
+  :param H_Dach: the buildings actuial roof height (in m):
+  :param b: Width of the buildings gable end or narrow side of the building for flat roofs (in m):
+  :param nominalheatoutput: Nominal heat output (in kW):
+  :param ratedthermalinput: Rated thermal input (in MW):
+
+  :return: a tuple (gamma, f)
+  """
+  alpha = roofangle(H_Dach, b/2)
+
+  gamma, f = roofpitchcorrection(alpha)
+
+  if (alpha >= 20):
+    H_1 = a * math.tan((alpha-gamma)*math.pi/180)
+    H_2 = f * H_Dach
+  else:
+    if (b == 0):
+      raise TypeError("The width b needs to be defined if roof angle alpha is less than 20 degree.")
+    f = alpha/20*0.85
+    H_1 = (a+b/2)*math.tan(20*math.pi/180)-H_Dach
+    H_2 = (1+f)*b/2*math.tan(20*math.pi/180)-H_Dach
+
+  H_S1 = min(H_1, H_2)
+  H_Ü = additiveterm(nominalheatoutput, ratedthermalinput)
+
+  return round(H_S1 + H_Ü,1)
   
