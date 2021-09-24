@@ -44,8 +44,8 @@ def symmetricpitchedroofs(a, H_Dach, b, nominalheatoutput=400, ratedthermalinput
   """
   Outlet height for symmetric pitched roofs.
 
-  :param a: horizontal distance beweent the centre of the outlet cross-section and the ridge (in m):
-  :param H_Dach: the buildings actuial roof height (in m):
+  :param a: horizontal distance beween the centre of the outlet cross-section and the ridge (in m):
+  :param H_Dach: the buildings actual roof height (in m):
   :param b: Width of the buildings gable end or narrow side of the building for flat roofs (in m):
   :param nominalheatoutput: Nominal heat output (in kW):
   :param ratedthermalinput: Rated thermal input (in MW):
