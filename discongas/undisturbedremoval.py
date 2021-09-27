@@ -171,6 +171,16 @@ def mansardroof(a, H_DachO, dridge_O, H_DachU, dridge_U, nominalheatoutput=400, 
   return round(H_S1 + H_Ü, 1)
 
 def upstreamsinglebuilding(l_V, b_V, beta, H_First):
+  """
+  Reciruculation zone of a single building.
+
+  :param l_V: length of the upstream building (in m):
+  :param b_V: width of the upstream building (in m):
+  :param beta: horizontal angle between an upstream building an the direction of the exhaust gas discharge system (in m):
+  :param H_First: ridge height of the upstream building (in m):
+
+  :return: height H_A1
+  """
   l_eff = l_V * math.sin(beta * math.pi / 180) + b_V * math.cos(beta * math.pi / 180)
   l_rz = (1.75*l_eff)/(1+0.25*l_eff/H_First)
   return round(l_rz,1)
