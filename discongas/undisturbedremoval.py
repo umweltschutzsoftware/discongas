@@ -98,3 +98,16 @@ def asymmetricpitchedroof(a, H_Dach, dridge, b_1, nominalheatoutput=400, ratedth
     return symmetricpitchedroof(a, H_Dach, b_1, nominalheatoutput, ratedthermalinput, False)
   else:
     return singlepitchroof(a, H_Dach, b, nominalheatoutput, ratedthermalinput)
+
+def sawtoothroof(H_First, b, nominalheatoutput=400, ratedthermalinput=100):
+  """
+  Outlet height for saw-tooth roofs.
+
+  :param H_Dach: the buildings actual roof height (in m):
+  :param b: Width of the buildings gable (in m):
+  :param nominalheatoutput: Nominal heat output (in kW):
+  :param ratedthermalinput: Rated thermal input (in MW):
+
+  :return: height H_A1
+  """
+  return flatroof(H_First, b, nominalheatoutput, ratedthermalinput)
