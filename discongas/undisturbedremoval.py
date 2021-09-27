@@ -111,3 +111,23 @@ def sawtoothroof(H_First, b, nominalheatoutput=400, ratedthermalinput=100):
   :return: height H_A1
   """
   return flatroof(H_First, b, nominalheatoutput, ratedthermalinput)
+
+def hippedroof(a, H_Dach, dridge, depth, nominalheatoutput=400, ratedthermalinput=1):
+  """
+  Outlet height for hipped roofs.
+
+  :param a: horizontal distance beween the centre of the outlet cross-section and the ridge (in m):
+  :param H_Dach: the buildings actual roof height (in m):
+  :param dridge: Horizontal distance from the gable to the ridge on the side where the outlet is placed (in m):
+  :param depth: Depth of the house (in m):
+  :param nominalheatoutput: Nominal heat output (in kW):
+  :param ratedthermalinput: Rated thermal input (in MW):
+
+  :return: height H_A1
+  """
+  H_A1 = symmetricpitchedroof(a, H_Dach, dridge, nominalheatoutput, ratedthermalinput)
+  H_Ü = additiveterm(nominalheatoutput, ratedthermalinput)
+  H_S1 = H_A1 - H_Ü
+  if depth <= dridge*2 <= depth*1.2:
+    return round(H_S1*0.4+H_Ü)
+  return H_A1

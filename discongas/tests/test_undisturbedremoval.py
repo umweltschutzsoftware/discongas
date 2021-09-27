@@ -38,3 +38,7 @@ def test_asymmetricpitchedroof():
 def test_sawtoothroof():
   # test according to annax A2.4
   assert(sawtoothroof(7.5, 9.75) == 3.9)
+
+def test_hippedroof():
+  # test according to annax A2.5
+  assert(hippedroof(1, 4, 3.65, 8) == 1.1)
