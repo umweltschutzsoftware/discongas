@@ -185,3 +185,6 @@ def upstreamsinglebuilding(l_V, b_V, beta, H_First):
   l_rz = (1.75*l_eff)/(1+0.25*l_eff/H_First)
   return round(l_rz,1)
 
+def contiguousbuilding(H_First):
+  return round(6*H_First, 1)
+
