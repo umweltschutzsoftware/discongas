@@ -42,3 +42,8 @@ def test_sawtoothroof():
 def test_hippedroof():
   # test according to annax A2.5
   assert(hippedroof(1, 4, 3.65, 8) == 1.1)
+
+def test_mansardroof():
+  # test according to annax A2.6
+  assert(mansardroof(1.7, 1.7, 3.3, 3, 0.7) == 1.6)
+  assert(mansardroof(1.7, 0.8, 2.5, 3, 1.5) == 1.5)

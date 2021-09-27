@@ -2,6 +2,18 @@ import math
 from discongas.util.inputoutput import *
 from discongas.util.roof import *
 
+def outletheight(alpha, gamma, a, f, H_Dach, dridge):
+  if (alpha >= 20):
+    H_1 = a * math.tan((alpha-gamma)*math.pi/180)
+    H_2 = f * H_Dach
+  else:
+    if (dridge == 0):
+      raise TypeError("The width b needs to be defined if roof angle alpha is less than 20 degree.")
+    f = alpha/20*0.85
+    H_1 = (a+dridge)*math.tan(20*math.pi/180)-H_Dach
+    H_2 = (1+f)*dridge*math.tan(20*math.pi/180)-H_Dach
+  return H_1, H_2
+
 def symmetricpitchedroof(a, H_Dach, dridge, nominalheatoutput=400, ratedthermalinput=1, flatroof=False):
   """
   Outlet height for symmetric pitched roofs.
@@ -22,15 +34,7 @@ def symmetricpitchedroof(a, H_Dach, dridge, nominalheatoutput=400, ratedthermali
 
   gamma, f = roofpitchcorrection(alpha)
 
-  if (alpha >= 20):
-    H_1 = a * math.tan((alpha-gamma)*math.pi/180)
-    H_2 = f * H_Dach
-  else:
-    if (dridge == 0):
-      raise TypeError("The width b needs to be defined if roof angle alpha is less than 20 degree.")
-    f = alpha/20*0.85
-    H_1 = (a+dridge)*math.tan(20*math.pi/180)-H_Dach
-    H_2 = (1+f)*dridge*math.tan(20*math.pi/180)-H_Dach
+  H_1, H_2 = outletheight(alpha, gamma, a, f, H_Dach, dridge)
 
   H_S1 = min(H_1, H_2)
   H_Ü = additiveterm(nominalheatoutput, ratedthermalinput)
@@ -131,3 +135,38 @@ def hippedroof(a, H_Dach, dridge, depth, nominalheatoutput=400, ratedthermalinpu
   if depth <= dridge*2 <= depth*1.2:
     return round(H_S1*0.4+H_Ü)
   return H_A1
+
+def mansardroof(a, H_DachO, dridge_O, H_DachU, dridge_U, nominalheatoutput=400, ratedthermalinput=1):
+  """
+  Outlet height for mansard roofs.
+
+  :param a: horizontal distance beween the centre of the outlet cross-section and the ridge (in m):
+  :param H_DachO: the height of the upper roof part (in m):
+  :param dridge_O: Horizontal distance from the gable of the upper roof part to the ridge on the side where the outlet is placed (in m):
+  :param H_DachU: the height of the lower roof part (in m):
+  :param dridge_U: Horizontal distance from the gable of the lower roof part to the gable of the upper roof part on the side where the outlet is placed (in m):
+  :param nominalheatoutput: Nominal heat output (in kW):
+  :param ratedthermalinput: Rated thermal input (in MW):
+
+  :return: height H_A1
+  """
+  dridge = dridge_U + dridge_O
+
+  alpha_O = roofangle(H_DachO, dridge_O)
+  gamma_O, f_O = roofpitchcorrection(alpha_O)
+  H_DachalphaO = dridge * math.tan(math.pi*alpha_O/180)
+  H_1O, H_2O = outletheight(alpha_O, gamma_O, a, f_O, H_DachalphaO, dridge)
+
+  alpha_U = 90-roofangle(dridge_U, H_DachU)
+  gamma_U, f_U = roofpitchcorrection(alpha_U)
+  H_DachalphaU = dridge * math.tan(math.pi*alpha_U/180)
+  H_1U, H_2U = outletheight(alpha_U, gamma_U, a, f_U, H_DachalphaU, dridge)
+
+  H_1 = dridge_O/dridge * H_1O + (1-dridge_O/dridge) * H_1U
+  H_2 = dridge_O/dridge * H_2O + (1-dridge_O/dridge) * H_2U
+
+  H_S1 = min(H_1, H_2)
+  H_Ü = additiveterm(nominalheatoutput, ratedthermalinput)
+
+  return round(H_S1 + H_Ü, 1)
+
