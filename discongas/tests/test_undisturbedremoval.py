@@ -31,6 +31,6 @@ def test_singlepitchroof():
   assert(singlepitchroof(8, 2.5, 8) == 1.9)
 
 def test_asymmetricpitchedroof():
-  # test according to annax2.3
+  # test according to annax A2.3
   assert(asymmetricpitchedroof(1.9, 3, 6, 2) == 1.8)
   assert(asymmetricpitchedroof(0.6, 3, 2, 6) == 0.7)
