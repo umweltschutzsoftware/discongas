@@ -186,5 +186,11 @@ def upstreamsinglebuilding(l_V, b_V, beta, H_First):
   return round(l_rz,1)
 
 def contiguousbuilding(H_First):
-  return round(6*H_First, 1)
+  """
+  Reciruculation zone of contiguous buildings.
 
+  :param H_First: ridge height of the upstream building (in m):
+
+  :return: horizontal recirculation zone length
+  """
+  return round(6*H_First, 1)
