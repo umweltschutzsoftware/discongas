@@ -179,7 +179,7 @@ def upstreamsinglebuilding(l_V, b_V, beta, H_First):
   :param beta: horizontal angle between an upstream building an the direction of the exhaust gas discharge system (in m):
   :param H_First: ridge height of the upstream building (in m):
 
-  :return: height H_A1
+  :return: horizontal recirculation zone length
   """
   l_eff = l_V * math.sin(beta * math.pi / 180) + b_V * math.cos(beta * math.pi / 180)
   l_rz = (1.75*l_eff)/(1+0.25*l_eff/H_First)
