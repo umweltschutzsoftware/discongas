@@ -170,3 +170,8 @@ def mansardroof(a, H_DachO, dridge_O, H_DachU, dridge_U, nominalheatoutput=400, 
 
   return round(H_S1 + H_Ü, 1)
 
+def upstreamsinglebuilding(l_V, b_V, beta, H_First):
+  l_eff = l_V * math.sin(beta * math.pi / 180) + b_V * math.cos(beta * math.pi / 180)
+  l_rz = (1.75*l_eff)/(1+0.25*l_eff/H_First)
+  return round(l_rz,1)
+

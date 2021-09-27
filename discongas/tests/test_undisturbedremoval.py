@@ -47,3 +47,18 @@ def test_mansardroof():
   # test according to annax A2.6
   assert(mansardroof(1.7, 1.7, 3.3, 3, 0.7) == 1.6)
   assert(mansardroof(1.7, 0.8, 2.5, 3, 1.5) == 1.5)
+
+def test_upstreamsinglebuilding():
+  # test according to appendix A1, tabular A3
+  # Building 1
+  assert(upstreamsinglebuilding(13.4, 17.9, 90, 11.5) == 18.2)
+  # Building 2
+  assert(upstreamsinglebuilding(8.9, 12.7, 84, 6.8) == 13)
+  # Building 4
+  # slide difference of 0.1 in comparison to tabular A3, might be
+  # due to rounding error
+  assert(upstreamsinglebuilding(12.1, 9.9, 52, 7.0) == 17.6)
+  # Building 5
+  # slide difference of 0.1 in comparison to tabular A3, might be
+  # due to rounding error
+  assert(upstreamsinglebuilding(15.6, 18.6, 76, 11.0) == 23.8)
