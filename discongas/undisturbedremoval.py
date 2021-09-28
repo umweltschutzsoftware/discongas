@@ -2,7 +2,9 @@ import math
 from discongas.util.inputoutput import *
 from discongas.util.roof import *
 
-def outletheight(alpha, gamma, a, f, H_Dach, dridge):
+def outletheight(alpha, a, H_Dach, dridge):
+  gamma, f = roofpitchcorrection(alpha)
+
   if (alpha >= 20):
     H_1 = a * math.tan((alpha-gamma)*math.pi/180)
     H_2 = f * H_Dach
@@ -32,9 +34,7 @@ def symmetricpitchedroof(a, H_Dach, dridge, nominalheatoutput=400, ratedthermali
   else:
     alpha = 0
 
-  gamma, f = roofpitchcorrection(alpha)
-
-  H_1, H_2 = outletheight(alpha, gamma, a, f, H_Dach, dridge)
+  H_1, H_2 = outletheight(alpha, a, H_Dach, dridge)
 
   H_S1 = min(H_1, H_2)
   H_Ü = additiveterm(nominalheatoutput, ratedthermalinput)
@@ -153,14 +153,12 @@ def mansardroof(a, H_DachO, dridge_O, H_DachU, dridge_U, nominalheatoutput=400, 
   dridge = dridge_U + dridge_O
 
   alpha_O = roofangle(H_DachO, dridge_O)
-  gamma_O, f_O = roofpitchcorrection(alpha_O)
   H_DachalphaO = dridge * math.tan(math.pi*alpha_O/180)
-  H_1O, H_2O = outletheight(alpha_O, gamma_O, a, f_O, H_DachalphaO, dridge)
+  H_1O, H_2O = outletheight(alpha_O, a, H_DachalphaO, dridge)
 
   alpha_U = 90-roofangle(dridge_U, H_DachU)
-  gamma_U, f_U = roofpitchcorrection(alpha_U)
   H_DachalphaU = dridge * math.tan(math.pi*alpha_U/180)
-  H_1U, H_2U = outletheight(alpha_U, gamma_U, a, f_U, H_DachalphaU, dridge)
+  H_1U, H_2U = outletheight(alpha_U, a, H_DachalphaU, dridge)
 
   H_1 = dridge_O/dridge * H_1O + (1-dridge_O/dridge) * H_1U
   H_2 = dridge_O/dridge * H_2O + (1-dridge_O/dridge) * H_2U
