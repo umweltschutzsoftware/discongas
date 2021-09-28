@@ -7,7 +7,7 @@ def exposurezone(nominalheatoutput, solidfuel=True, thirtyfirstbimschv=False):
   :param solidfuel: if True - solid fuel heating appliance otherwise liquid or gas burning appliance (Boolean):
   :param thirteefirstbimschv: appliance according to 31.BImSchV (Boolean):
 
-  :return: horizontal recirculation zone length
+  :return: exposure zone radius
   """
   if thirtyfirstbimschv:
     return 50
