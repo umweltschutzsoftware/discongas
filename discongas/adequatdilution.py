@@ -94,3 +94,40 @@ def exposurezone(nominalheatoutput, solidfuel=True, thirtyfirstbimschv=False):
         return 27
       else:
         return 28
+
+def referencelevel(nominalheatoutput, H_F, H_First, solidfuel=True, thirtyfirstbimschv=False):
+  """
+  Reference level height.
+
+  :param nominalheatoutput: nominal heat output (in kW):
+  :param H_F: height of the reference level, due to surrounding openings, above the surface level (in m):
+  :param H_First: ridge height of the building with the outlet (in m):
+  :param solidfuel: if True - solid fuel heating appliance otherwise liquid or gas burning appliance (Boolean):
+  :param thirteefirstbimschv: appliance according to 31.BImSchV (Boolean):
+
+  :return: height H_E2
+  """
+  if thirtyfirstbimschv:
+    H_B = 5
+  else:
+    if solidfuel:
+      if nominalheatoutput <= 50:
+        H_B = 1
+      elif nominalheatoutput > 50 and nominalheatoutput <= 100:
+        H_B = 2
+      elif nominalheatoutput > 100 and nominalheatoutput <= 200:
+        H_B = 3
+      elif nominalheatoutput > 200 and nominalheatoutput <= 400:
+        H_B = 4
+      else:
+        H_B = 5
+    else:
+      if nominalheatoutput <= 450:
+        H_B = 1
+      elif nominalheatoutput > 450 and nominalheatoutput <= 550:
+        H_B = 2
+      elif nominalheatoutput > 550 and nominalheatoutput <= 750:
+        H_B = 3
+      else: 
+        H_B = 4
+  return round((H_F - H_First) + H_B, 1)
