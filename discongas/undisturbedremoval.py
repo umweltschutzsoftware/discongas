@@ -194,3 +194,21 @@ def contiguousbuilding(H_First):
   :return: horizontal recirculation zone length
   """
   return round(6*H_First, 1)
+
+def recirculationheightupstreambuilding(H_FirstV, H_2V, H_First, l_RZ, l_A, nominalheatoutput=400, ratedthermalinput=1, contiguous=False):
+  """
+  Outlet height by recirculation zone height of upstream building.
+
+  :param H_FirstV: ridge height of the upstream building (in m):
+  :param H_2V: height H_2 of recirculation zone at upstream building (in m):
+  :param H_First: ridge height of the building with the outlet (in m):
+  :param l_A: horizontl distance of the center of the outlet to the center of the upstream building (in m):
+  :param nominalheatoutput: Nominal heat output (in kW):
+  :param ratedthermalinput: Rated thermal input (in MW):
+
+  :return: height H_A2
+  """
+  p = math.sqrt(1-l_A**2/l_RZ**2)
+  H_S2 = p*(H_FirstV+H_2V)-H_First
+  H_Ü = additiveterm(nominalheatoutput, ratedthermalinput)
+  return round(H_S2 + H_Ü,1)

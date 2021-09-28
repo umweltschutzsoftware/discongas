@@ -62,3 +62,10 @@ def test_upstreamsinglebuilding():
   # slide difference of 0.1 in comparison to tabular A3, might be
   # due to rounding error
   assert(upstreamsinglebuilding(15.6, 18.6, 76, 11.0) == 23.8)
+
+def test_recirculationheightupstreambuilding():
+  # test according to appendix A1, tabular A3
+  # Building 1
+  assert(recirculationheightupstreambuilding(11.5, 2.8, 10.4, 18.2, 17.4) == -5.8)
+  # Building 5
+  assert(recirculationheightupstreambuilding(11, 3.3, 10.4, 23.7, 16.5) == 0.3)
