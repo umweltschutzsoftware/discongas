@@ -8,9 +8,9 @@ from abc import ABC, abstractmethod
 class Roof(ABC):
   @classmethod
   def from_roof(cls, orig):
-    return cls(orig.name, orig.alpha, orig.H_First, orig.H_Dach, orig.b, orig.l, orig.nominalheatoutput, orig.ratedthermalinput, orig.alpha_O, orig.b_O, orig.address)
+    return cls(orig.name, orig.alpha, orig.H_First, orig.H_Dach, orig.b, orig.l, orig.h, orig.nominalheatoutput, orig.ratedthermalinput, orig.alpha_O, orig.b_O, orig.address)
 
-  def __init__(self, name, alpha, H_First, H_Dach, b, l, nominalheatoutput=400, ratedthermalinput=1, alpha_O=None, b_O=None, address=None):
+  def __init__(self, name, alpha, H_First, H_Dach, b, l, h, nominalheatoutput=400, ratedthermalinput=1, alpha_O=None, b_O=None, address=None):
     """
     The roof constructor.
 
@@ -20,6 +20,7 @@ class Roof(ABC):
     :param H_Dach: the buildings actual roof height (in m):
     :param b: width of the buildings gable, or the side of the building in direction to the building with the outlet. In case of a mansard roof, this is the width of the lower roof. (in m):
     :param l: length of the building. (in m):
+    :param h: height of the ground of the building of the roof. (in m):
     :param nominalheatoutput: nominal heat output. Default: 400 (in kW):
     :param ratedthermalinput: Rated thermal input. Default 1 (in MW):
     :param alpha_O: in case of a mansard roof, this is the angle of the upper roof. Default: None (in degree):
@@ -43,6 +44,7 @@ class Roof(ABC):
       self.gamma_O, self.f_O = roofpitchcorrection(self.alpha_O)
     self.contiguous = False
     self.address = address
+    self.h = h
 
   def L_RZ(self, beta):
     """
