@@ -2,70 +2,80 @@ from discongas.undisturbedremoval import *
 
 def test_symmetricpitchedroof():
   # test according to annax A1.2
+  spr = SymmetricPitchedRoof(name="", alpha=33, H_First=10.4, H_Dach=3.7, b=11.3, l=16.3)
   # X1
-  assert(symmetricpitchedroof(0, 3.7, 5.65) == 0.4)
+  assert(spr.H_A1(0) == 0.4)
   # X2 
-  assert(symmetricpitchedroof(5.7, 3.7, 5.65) == 2.8)
+  assert(spr.H_A1(5.6) == 2.8)
   # X3 
-  assert(symmetricpitchedroof(0, 3.7, 5.65) == 0.4)
-
-  # test with a roof angle == 20
-  assert(symmetricpitchedroof(0, 3.7, 5.65) == 0.4)
-
-  # test with a roof angle < 20
-  assert(symmetricpitchedroof(0, 2.45, 7.8) == 0.8)
+  assert(spr.H_A1(0) == 0.4)
 
 def test_flatroof():
-  # test according to annax A2.1
-  # only the rooftop building is considered
-  assert(flatroof(4, 2) == 1.1)
-
-def test_singlepitchroof():
-  # test according to annax A2.3
-  assert(singlepitchroof(0, 3.7, 8)==0.4)
-  assert(singlepitchroof(4, 3.7, 8)==1.9)
-  assert(singlepitchroof(8, 3.7, 8)==1.9)
-
-  assert(singlepitchroof(0, 2.5, 8) == 0.6)
-  assert(singlepitchroof(4, 2.5, 8) == 1.9)
-  assert(singlepitchroof(8, 2.5, 8) == 1.9)
+  # test according to annax A2.1.3
+  fr = FlatRoof(name="", alpha=0, H_First=8, H_Dach=0, b=15, l=28)
+  assert(fr.H_A1(0) == 3.1)
 
 def test_asymmetricpitchedroof():
+  # test according to annax A.2.2
+  # outlet on the flat side
+  apr = AsymmetricPitchedRoof(name="", alpha=27, H_First=7, H_Dach=3, b=6, l=9)
+  assert(apr.H_A1(0.6) == 0.7)
+  # outlet on the steep side
+  apr =  AsymmetricPitchedRoof(name="", alpha=56, H_First=7, H_Dach=3, b=2, l=9)
+  assert(apr.H_A1(1.9) == 1.8)
+
+def test_singlepithroof():
   # test according to annax A2.3
-  assert(asymmetricpitchedroof(1.9, 3, 6, 2) == 1.8)
-  assert(asymmetricpitchedroof(0.6, 3, 2, 6) == 0.7)
+  spr = SinglePitchRoof(name="", alpha=25, H_First=7.7, H_Dach=3.7, b=8, l=12)
+  assert(spr.H_A1(0) == 0.4)
+  assert(spr.H_A1(4) == 1.9)
+  assert(spr.H_A1(8) == 1.9)
+
+  spr = SinglePitchRoof(name="", alpha=17, H_First=7.7, H_Dach=3.7, b=8, l=12)
+  assert(spr.H_A1(0) == 0.6)
+  assert(spr.H_A1(4) == 1.9)
+  assert(spr.H_A1(8) == 1.9)
 
 def test_sawtoothroof():
   # test according to annax A2.4
-  assert(sawtoothroof(7.5, 9.75) == 3.9)
+  str = SawToothRoof(name="", alpha=0, H_First=7.5, H_Dach=1.5, b=19.5, l=25.6)
+  assert(str.H_A1(0) == 3.9)
 
 def test_hippedroof():
   # test according to annax A2.5
-  assert(hippedroof(1, 4, 3.65, 8) == 1.1)
+  hr = HippedRoof(name="", alpha=48, H_First=7.5, H_Dach=4, b=7.3, l=8)
+  assert(hr.H_A1(1) == 0.8)
+
+  hr = HippedRoof(name="", alpha=48, H_First=7.5, H_Dach=4, b=7.3, l=9)
+  assert(hr.H_A1(1) == 1.1)
 
 def test_mansardroof():
   # test according to annax A2.6
-  assert(mansardroof(1.7, 1.7, 3.3, 3, 0.7) == 1.6)
-  assert(mansardroof(1.7, 0.8, 2.5, 3, 1.5) == 1.5)
+  mr = MansardRoof(name="", alpha=77, H_First=10.7, H_Dach=4.7, b=8, l=12, b_O=6.6, alpha_O=27)
+  assert(mr.H_A1(1.7) == 1.6)
+  mr = MansardRoof(name="", alpha=63, H_First=10.7, H_Dach=4.7, b=8, l=12, b_O=5, alpha_O=18)
+  assert(mr.H_A1(1.7) == 1.5)
 
 def test_upstreamsinglebuilding():
   # test according to appendix A1, tabular A3
   # Building 1
-  assert(upstreamsinglebuilding(13.4, 17.9, 90, 11.5) == 18.2)
+  r = SymmetricPitchedRoof(name="", alpha=31, H_First=11.5, H_Dach=4, b=17.9, l=13.4)
+  assert(r.L_RZ(beta=90) == 18.2)
   # Building 2
-  assert(upstreamsinglebuilding(8.9, 12.7, 84, 6.8) == 13)
+  r = SymmetricPitchedRoof(name="", alpha=28, H_First=6.8, H_Dach=3.4, b=12.7, l=8.9)
+  assert(r.L_RZ(beta=84) == 13)
   # Building 4
-  # slide difference of 0.1 in comparison to tabular A3, might be
-  # due to rounding error
-  assert(upstreamsinglebuilding(12.1, 9.9, 52, 7.0) == 17.6)
+  r = SymmetricPitchedRoof(name="", alpha=36, H_First=7, H_Dach=3.6, b=9.9, l=12.1)
+  assert(r.L_RZ(beta=52) == 17.6)
   # Building 5
-  # slide difference of 0.1 in comparison to tabular A3, might be
-  # due to rounding error
-  assert(upstreamsinglebuilding(15.6, 18.6, 76, 11.0) == 23.8)
+  r = SymmetricPitchedRoof(name="", alpha=32, H_First=11, H_Dach=4.9, b=18.6, l=15.6)
+  assert(r.L_RZ(beta=76) == 23.8)
 
 def test_recirculationheightupstreambuilding():
   # test according to appendix A1, tabular A3
   # Building 1
-  assert(recirculationheightupstreambuilding(11.5, 2.8, 10.4, 18.2, 17.4) == -5.8)
+  r = SymmetricPitchedRoof(name="", alpha=31, H_First=11.5, H_Dach=4, b=17.9, l=13.4)
+  assert(r.H_A2(beta=90, l_A=17.4, H_First=10.4, H_U=0.4) == -5.8)
   # Building 5
-  assert(recirculationheightupstreambuilding(11, 3.3, 10.4, 23.7, 16.5) == 0.3)
+  r = SymmetricPitchedRoof(name="", alpha=32, H_First=11.0, H_Dach=4.9, b=18.6, l=15.6)
+  assert(r.H_A2(beta=76, l_A=16.5, H_First=10.4, H_U=0.4) == 0.3)
