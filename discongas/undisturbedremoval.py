@@ -1,6 +1,7 @@
 import math
 from discongas.util.inputoutput import *
 from discongas.util.roof import *
+from discongas.adequatdilution import *
 import copy
 
 from abc import ABC, abstractmethod
@@ -10,7 +11,7 @@ class Roof(ABC):
   def from_roof(cls, orig):
     return cls(orig.name, orig.alpha, orig.H_First, orig.H_Dach, orig.b, orig.l, orig.h, orig.nominalheatoutput, orig.ratedthermalinput, orig.alpha_O, orig.b_O, orig.address)
 
-  def __init__(self, name, alpha, H_First, H_Dach, b, l, h, nominalheatoutput=400, ratedthermalinput=1, alpha_O=None, b_O=None, address=None):
+  def __init__(self, name, alpha, H_First, H_Dach, b, l, h, nominalheatoutput=400, ratedthermalinput=0.9, alpha_O=None, b_O=None, address=None):
     """
     The roof constructor.
 
@@ -22,7 +23,7 @@ class Roof(ABC):
     :param l: length of the building. (in m):
     :param h: height of the ground of the building of the roof. (in m):
     :param nominalheatoutput: nominal heat output. Default: 400 (in kW):
-    :param ratedthermalinput: Rated thermal input. Default 1 (in MW):
+    :param ratedthermalinput: Rated thermal input. Default 0.9 (in MW):
     :param alpha_O: in case of a mansard roof, this is the angle of the upper roof. Default: None (in degree):
     :param b_O: in case of a mansard roof, this is the width of the upper roof. Default: None (in m):
     :param address: Adress of the current building:
@@ -77,6 +78,32 @@ class Roof(ABC):
     H_2 = self.H_2()
     H_S2 = p*(self.H_First+self.H_2())-H_First
     return round(H_S2 + H_U, 1)
+
+  def H_E1(self):
+    """
+    Minimum height of the exhaust gas discharge system above the terrain surface
+
+    :return: H_E1 (in m)
+    """
+    if self.ratedthermalinput < 1:
+      return 0
+    return 10 - self.H_First
+
+  def H_E2(self, H_F):
+    """
+    Required outlet height above the ridge based on the reference level
+
+    :return: H_E2 (in m)
+    """
+    return referencelevel(self.nominalheatoutput, H_F, self.H_First)
+
+  def exposure_zone(self):
+    """
+    Exposure zone of the exhaust gas discharge system
+
+    :return: radius of the exposure zone (in m)
+    """
+    return exposurezone(self.nominalheatoutput)
 
   @abstractmethod
   def H_A1(self, a):
