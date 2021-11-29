@@ -125,6 +125,14 @@ class Roof(ABC):
     """
     pass
 
+  def as_dict(self):
+    return {
+      "Alpha": self.alpha,
+      "H_First": self.H_First,
+      "H_Dach":self.H_Dach
+    }
+
+
 class SymmetricPitchedRoof(Roof):
   def H_2(self):
     if self.alpha >= 20:
