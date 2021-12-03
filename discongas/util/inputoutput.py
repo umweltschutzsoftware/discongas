@@ -9,7 +9,7 @@ def additiveterm(nominalheatoutput, ratedthermalinput):
   """
 
   if nominalheatoutput <= 400:
-    return 0.4
+    return 0.5
   elif nominalheatoutput > 400 and ratedthermalinput < 1:
     return 1
   else:
