@@ -39,7 +39,11 @@ class Model():
       dur = self.upstreamroofs[key]
       ur = dur['r']
 
-      if dur['l_A'] <= ur.L_RZ(dur['beta']):
+      L_RZ = ur.L_RZ(dur['beta'])
+
+      self.__add_data(ur, "L_RZ", L_RZ)
+
+      if dur['l_A'] <= L_RZ:
         hH_A2 = ur.H_A2(dur['beta'], dur['l_A'], self.sourceroof.H_First, self.sourceroof.H_U)
         hH_A2T = 0
 
