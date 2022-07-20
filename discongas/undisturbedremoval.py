@@ -11,6 +11,34 @@ class Roof(ABC):
   def from_roof(cls, orig):
     return cls(orig.name, orig.alpha, orig.H_First, orig.H_Dach, orig.b, orig.l, orig.h, orig.nominalheatoutput, orig.ratedthermalinput, orig.alpha_O, orig.b_O, orig.address)
 
+  @classmethod
+  def from_dict(cls, d):
+    typ = d['typ']
+    name = d['id']
+    alpha = d['alpha']
+    l = d['l']
+    b = d['b']
+    h_dach = d['h_dach']
+    h_first = d['h_first']
+    h = d['hoehe']
+
+    if (typ == 'Satteldach'):
+      return SymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h)
+    elif (typ == 'Asymetrisches Satteldach'):
+      return AsymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h)
+    elif (typ == 'Pultdach'):
+      return SinglePitchRoof(name, alpha, h_first, h_dach, b, l, h)
+    elif (typ == 'Sheddach'):
+      return SawToothRoof(name, alpha, h_first, h_dach, b, l, h)
+    elif (typ == 'Flachdach'):
+      return FlatRoof(name, alpha, h_first, h_dach, b, l, h)
+    elif (typ == 'Walmdach'):
+      return HippedRoof(name, alpha, h_first, h_dach, b, l, h)
+    elif (typ == 'Mansarddach'):
+      raise ValueError('Mansarddach not yet implemented')
+    else:
+      raise ValueError('Unknown roof type \"{}\"'.format(typ))
+
   def __init__(self, name, alpha, H_First, H_Dach, b, l, h, nominalheatoutput=400, ratedthermalinput=0.9, alpha_O=None, b_O=None, address=None):
     """
     The roof constructor.
