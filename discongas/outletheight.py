@@ -2,8 +2,30 @@ from discongas.undisturbedremoval import *
 from discongas.util.inputoutput import *
 from discongas.util.roof import *
 import sys
+import pandas as pd
 
 class Model():
+  @classmethod
+  def from_csv(cls, filepath):
+    df = pd.read_csv(filepath)
+    buildingdict = df[df['schornstein']==True].to_dict(orient='records')
+    if len(buildingdict) > 0:
+      if len(buildingdict) > 1:
+        raise ValueError('Multiple source roofs are not supported.')
+      sourceroof = Roof.from_dict(buildingdict[0])
+      a = buildingdict[0]['a']
+    else:
+      raise ValueError('There must be a source roof defined.')
+
+    m = Model(a, sourceroof)
+
+    upstreamroofs = df[df['schornstein']==False].to_dict(orient='records')
+    for ur in upstreamroofs:
+      r = Roof.from_dict(ur)
+      m.add_upstreamroof(ur['beta'], ur['l_a'], r)
+
+    return m
+
   def __init__(self, a, sourceroof):
     self.a = a
     self.sourceroof = sourceroof

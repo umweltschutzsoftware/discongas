@@ -159,3 +159,8 @@ def test_output():
   
   # Check if result is set
   assert(d[3]['b5']['H_A2T'] == 4.7)
+
+def test_fromcsv():
+  testfilepath = 'discongas/tests/testfiles/parameter.csv'
+  m = Model.from_csv(testfilepath)
+  assert(m.height() == 1.8)

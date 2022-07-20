@@ -7,7 +7,7 @@ setup(
   author='Ingenieurbüro Richters & Hüls',
   author_email='info@richtershuels.de',
   packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
-  install_requires=[],
+  install_requires=['pandas'],
   setup_requires=['pytest-runner'],
   tests_require=['pytest==4.4.1'],
   test_suite='tests',

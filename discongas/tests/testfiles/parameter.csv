@@ -1,0 +1,9 @@
+fid,hoehe,id,alpha,l,b,schornstein,typ,a,h_dach,h_first,l_a,beta
+"1",225.7,G2,0,10.7,7.5,false,Flachdach,0,0,6.5,41.3,61.7
+"3",224.6,G4,0,10.7,7.5,false,Flachdach,0,0,6.5,25.9,36.4
+"4",223.6,G5,0,7.5,10.7,false,Flachdach,0,0,6.5,22.8,66.2
+"5",222,G6,0,7.5,10.7,false,Flachdach,0,0,6.5,21.5,81.7
+"6",220,G7,0,7.5,10.7,false,Flachdach,0,0,6.5,21.8,83.3
+"8",223.6,G1,0,10.7,7.5,true,Flachdach,0,0,6.5,0,0
+"9",230.9,G3,0,12,12,false,Flachdach,0,0,8,18.8,77.7
+"10",222.1,G8,0,10.7,7.5,false,Flachdach,0,0,6.5,7.7,88.4
