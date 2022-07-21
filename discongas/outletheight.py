@@ -33,6 +33,8 @@ class Model():
     self.data = {}
     self.__add_roof_data(sourceroof)
     self.__add_data(sourceroof, "A", a)
+    self.H_A_source = -1
+    self.H_E_source = -1
 
   def add_upstreamroof(self, beta, l_A, upstreamroof):
     self.upstreamroofs[upstreamroof.name] = {}
