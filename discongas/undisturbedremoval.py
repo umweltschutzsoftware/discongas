@@ -21,19 +21,20 @@ class Roof(ABC):
     h_dach = d['h_dach']
     h_first = d['h_first']
     h = d['hoehe']
+    address = d['adresse']
 
     if (typ == 'Satteldach'):
-      return SymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h)
+      return SymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
     elif (typ == 'Asymetrisches Satteldach'):
-      return AsymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h)
+      return AsymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
     elif (typ == 'Pultdach'):
-      return SinglePitchRoof(name, alpha, h_first, h_dach, b, l, h)
+      return SinglePitchRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
     elif (typ == 'Sheddach'):
-      return SawToothRoof(name, alpha, h_first, h_dach, b, l, h)
+      return SawToothRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
     elif (typ == 'Flachdach'):
-      return FlatRoof(name, alpha, h_first, h_dach, b, l, h)
+      return FlatRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
     elif (typ == 'Walmdach'):
-      return HippedRoof(name, alpha, h_first, h_dach, b, l, h)
+      return HippedRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
     elif (typ == 'Mansarddach'):
       raise ValueError('Mansarddach not yet implemented')
     else:
@@ -156,6 +157,22 @@ class Roof(ABC):
     pass
 
   def as_dict(self):
+    t = ''
+    if (type(self) == SymmetricPitchedRoof):
+      t = 'Satteldach'
+    elif (type(self) == AsymmetricPitchedRoof):
+      t = 'Asymetrisches Satteldach'
+    elif (type(self) == SinglePitchRoof):
+      t = 'Pultdach'
+    elif (type(self) == SawToothRoof):
+      t = 'Sheddach'
+    elif (type(self) == FlatRoof):
+      t = 'Flachdach'
+    elif (type(self) == HippedRoof):
+      t = 'Walmdach'
+    elif (type(self) == MansardRoof):
+      t = 'Mansarddach'
+
     return {
       "Alpha": self.alpha,
       "H_First": self.H_First,
@@ -175,7 +192,10 @@ class Roof(ABC):
       "Hoehe": -1,
       "H_F": -1,
       "H_B": self.H_B,
-      "E_Zone": self.exposure_zone()
+      "E_Zone": self.exposure_zone(),
+      "Address": self.address,
+      "Type": t,
+      "Name": self.name
     }
 
 

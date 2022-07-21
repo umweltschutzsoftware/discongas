@@ -176,7 +176,7 @@ def test_outputcontent():
   sr = FlatRoof('G1', 0, 6.5, 0, 7.5, 10.7, 225.7, nominalheatoutput=15)
   m = Model(0, sr)
   
-  ur3 = FlatRoof('G3', 0, 8, 0, 12, 12, 230.9)
+  ur3 = FlatRoof('G3', 0, 8, 0, 12, 12, 230.9, address='My Street 13')
   ur8 = FlatRoof('G8', 0, 6.5, 0, 7.5, 10.7, 222.1)
 
   m.add_upstreamroof(77.7, 16.3, ur3)
@@ -197,6 +197,7 @@ def test_outputcontent():
   assert(len(d['Data']) == 3)
 
   # Parameters for G1
+  assert(d['Data']['G1']['Name'] == 'G1')
   assert(d['Data']['G1']['A'] == 0)
   assert(d['Data']['G1']['L'] == 10.7)
   assert(d['Data']['G1']['B'] == 7.5)
@@ -204,11 +205,13 @@ def test_outputcontent():
   assert(d['Data']['G1']['H_Dach'] == 0)
   assert(d['Data']['G1']['H_A1'] == 1.8)
   assert(d['Data']['G1']['E_Zone'] == 15)
+  assert(d['Data']['G1']['Type'] == 'Flachdach')
 
   # Parameters for G3
   assert(d['Data']['G3']['L_RZ'] == 17.3)
   assert(d['Data']['G3']['H_A2'] == 0)
   assert(d['Data']['G3']['H_A2T'] == 2.5)
+  assert(d['Data']['G3']['Address'] == 'My Street 13')
 
 # Parameters for G8
   assert(d['Data']['G8']['H_E2'] == 0)

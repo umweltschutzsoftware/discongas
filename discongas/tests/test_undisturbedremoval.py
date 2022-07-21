@@ -93,7 +93,8 @@ def test_fromdict():
   'h_dach': 0,
   'h_first': 6.5,
   'l_a': 0.0,
-  'beta': 0.0 }
+  'beta': 0.0,
+  'adresse': 'a1' }
 
   fr = Roof.from_dict(d)
   assert(type(fr) == FlatRoof)
