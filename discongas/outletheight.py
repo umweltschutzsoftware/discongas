@@ -87,8 +87,11 @@ class Model():
     return round(H_A2, 1)
 
   def heightbyadequatedilution(self):
-    H_E1 = self.sourceroof.H_E1()
-    self.__add_data(self.sourceroof, "H_E1", H_E1)
+    if self.sourceroof.ratedthermalinput > 1:
+      H_E1 = self.sourceroof.H_E1()
+      self.__add_data(self.sourceroof, "H_E1", H_E1)
+    else:
+      H_E1 = 0
 
     H_E2 = -sys.maxsize
     for key in self.upstreamroofs.keys():
@@ -109,20 +112,20 @@ class Model():
         self.__add_data(ur, "H_E2", hH_E2)
         self.__add_data(ur, "H_E2T", hH_E2T)
 
-    if H_E1 > H_E2:
+    if H_E1 > H_E2 and H_E1 > 0:
       self.H_E_source = self.sourceroof.name
       return round(H_E1, 1)
-    return round(hH_E2T, 1)
+    return round(H_E2, 1)
 
   def height(self):
-    hbur = self.heightbyundisturbedremoval()
-    hbad = self.heightbyadequatedilution()
+    self.hbur = self.heightbyundisturbedremoval()
+    self.hbad = self.heightbyadequatedilution()
 
-    if hbur > hbad:
-      self.H_source = "UR"
-      return hbur
-    self.H_source = "AD"
-    return hbad
+    if self.hbur > self.hbad:
+      self.H_source = "Undisturbed Removal"
+      return self.hbur
+    self.H_source = "Adequate Dilution"
+    return self.hbad
 
   def __add_roof_data(self, roof):
     if roof.name not in self.data.keys():
@@ -133,6 +136,27 @@ class Model():
 
   def height_with_dict(self):
     height = self.height()
-    if self.H_source == "UR":
-      return height, "UR", self.H_A_source, self.data
-    return height, "AD", self.H_E_source, self.data
+    
+    #if self.H_source == "UR":
+      #return height, "UR", self.H_A_source, self.data
+    #return height, "AD", self.H_E_source, self.data
+
+    res = {
+      'Source Roof': self.sourceroof.name,
+      'Number of upstream roofs': len(self.upstreamroofs),
+      'Result': {
+        'Height': height,
+        'Source': self.H_source,
+      },
+      'Adequate Dilution': {
+        'Height': self.hbad,
+        'Source': self.H_E_source
+      },
+      'Undisturbed Removal': {
+        'Height': self.hbur,
+        'Source': self.H_A_source
+      },
+      'Data': self.data
+    }
+
+    return res

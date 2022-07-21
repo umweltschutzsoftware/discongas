@@ -65,6 +65,7 @@ class Roof(ABC):
     self.ratedthermalinput = ratedthermalinput
     self.H_U = additiveterm(nominalheatoutput, ratedthermalinput)
     self.gamma, self.f = roofpitchcorrection(self.alpha)
+    self.H_B = -1
     self.b = b
     self.l = l
     self.alpha_O = alpha_O
@@ -123,7 +124,8 @@ class Roof(ABC):
 
     :return: H_E2 (in m)
     """
-    return referencelevel(self.nominalheatoutput, H_F, self.H_First)
+    rlevel, self.H_B = referencelevel(self.nominalheatoutput, H_F, self.H_First)
+    return rlevel
 
   def exposure_zone(self):
     """
@@ -157,7 +159,23 @@ class Roof(ABC):
     return {
       "Alpha": self.alpha,
       "H_First": self.H_First,
-      "H_Dach":self.H_Dach
+      "H_Dach": self.H_Dach,
+      "L": self.l,
+      "B": self.b,
+      "A": -1,
+      "L_A": -1,
+      "Beta": -1,
+      "L_RZ": -1,
+      "H_A1": -1,
+      "H_A2": -1,
+      "H_A2T": -1,
+      "H_E1": -1,
+      "H_E2": -1,
+      "H_E2T": -1,
+      "Hoehe": -1,
+      "H_F": -1,
+      "H_B": self.H_B,
+      "E_Zone": self.exposure_zone()
     }
 
 

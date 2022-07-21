@@ -137,28 +137,84 @@ def test_output():
   m.add_referencelevel(H_F=8.6, upstreamroof=b5)
 
   d = m.height_with_dict()
-  assert(d[0] == 4.7)
-  assert(d[1] == 'UR')
-  assert(d[2] == 'b5')
+  assert(d['Result']['Source'] == 'Undisturbed Removal')
+  assert(d['Result']['Height'] == 4.7)
 
-  # check source roof
-  sr = d[3]['b3']
-  assert('A' in sr.keys())
-  assert('Beta' not in sr.keys())
+  assert(d['Adequate Dilution']['Source'] == 'b5')
+  assert(d['Adequate Dilution']['Height'] == 3.9)
+
+  assert(d['Undisturbed Removal']['Source'] == 'b5')
+  assert(d['Undisturbed Removal']['Height'] == 4.7)
+
+  assert(d['Number of upstream roofs'] == 4)
+
+  sourceroofid = d['Source Roof']
+  assert(sourceroofid == 'b3')
+
+  assert(len(d['Data']) == 5)
 
   # check upstream roofs
-  for k in d[3].keys():
-    if k == 'b3':
-      continue
-    assert('Beta' in d[3][k].keys())
-    assert('L_A' in d[3][k].keys())
+  dd = d['Data']
+  for k in dd.keys():
+    assert('Alpha' in dd[k].keys())
+    assert('H_First' in dd[k].keys())
+    assert('H_Dach' in dd[k].keys())
+    assert('A' in dd[k].keys())
+    assert('L_A' in dd[k].keys())
+    assert('Beta' in dd[k].keys())
+    assert('L_RZ' in dd[k].keys())
+    assert('H_A1' in dd[k].keys())
+    assert('H_A2' in dd[k].keys())
+    assert('H_A2T' in dd[k].keys())
+    assert('H_E1' in dd[k].keys())
+    assert('H_E2' in dd[k].keys())
+    assert('H_E2T' in dd[k].keys())
+    assert('H_F' in dd[k].keys())
+    assert('Hoehe' in dd[k].keys())
 
-  # H_F only is defined for house 'b5'
-  assert('H_F' in d[3]['b5'].keys())
-  assert(d[3]['b5']['H_F'] == 8.6)
+def test_outputcontent():
+  sr = FlatRoof('G1', 0, 6.5, 0, 7.5, 10.7, 225.7, nominalheatoutput=15)
+  m = Model(0, sr)
   
-  # Check if result is set
-  assert(d[3]['b5']['H_A2T'] == 4.7)
+  ur3 = FlatRoof('G3', 0, 8, 0, 12, 12, 230.9)
+  ur8 = FlatRoof('G8', 0, 6.5, 0, 7.5, 10.7, 222.1)
+
+  m.add_upstreamroof(77.7, 16.3, ur3)
+  m.add_upstreamroof(88.4, 6.5, ur8)
+
+  m.add_referencelevel(6, ur8)
+
+  d = m.height_with_dict()
+
+  # Result is based on UR given by G3
+  assert(d['Result']['Source'] == 'Undisturbed Removal')
+  assert(d['Undisturbed Removal']['Source'] == 'G3')
+  
+  # Adequate Dilution is only verified for G8
+  assert(d['Adequate Dilution']['Source'] == 'G8')
+
+  # Three roofs
+  assert(len(d['Data']) == 3)
+
+  # Parameters for G1
+  assert(d['Data']['G1']['A'] == 0)
+  assert(d['Data']['G1']['L'] == 10.7)
+  assert(d['Data']['G1']['B'] == 7.5)
+  assert(d['Data']['G1']['H_First'] == 6.5)
+  assert(d['Data']['G1']['H_Dach'] == 0)
+  assert(d['Data']['G1']['H_A1'] == 1.8)
+  assert(d['Data']['G1']['E_Zone'] == 15)
+
+  # Parameters for G3
+  assert(d['Data']['G3']['L_RZ'] == 17.3)
+  assert(d['Data']['G3']['H_A2'] == 0)
+  assert(d['Data']['G3']['H_A2T'] == 2.5)
+
+# Parameters for G8
+  assert(d['Data']['G8']['H_E2'] == 0)
+  assert(d['Data']['G8']['H_E2T'] == -3.1)
+  assert(d['Data']['G8']['H_F'] == 6)
+  
 
 def test_fromcsv():
   testfilepath = 'discongas/tests/testfiles/parameter.csv'
