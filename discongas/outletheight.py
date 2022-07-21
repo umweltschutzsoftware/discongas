@@ -19,10 +19,18 @@ class Model():
 
     m = Model(a, sourceroof)
 
+    referencelevelexists = False
+
     upstreamroofs = df[df['schornstein']==False].to_dict(orient='records')
     for ur in upstreamroofs:
       r = Roof.from_dict(ur)
       m.add_upstreamroof(ur['beta'], ur['l_a'], r)
+      if ur['bezugshoehe']>0:
+        if not referencelevelexists:
+          m.add_referencelevel(ur['bezugshoehe'], r)
+          referencelevelexists = True
+        else:
+          ValueError('Multiple reference levels are not supported.')
 
     return m
 

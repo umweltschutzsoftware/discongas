@@ -22,19 +22,21 @@ class Roof(ABC):
     h_first = d['h_first']
     h = d['hoehe']
     address = d['adresse']
+    qf = d['qf']
+    qn = d['qn']
 
     if (typ == 'Satteldach'):
-      return SymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
+      return SymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
     elif (typ == 'Asymetrisches Satteldach'):
-      return AsymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
+      return AsymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
     elif (typ == 'Pultdach'):
-      return SinglePitchRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
+      return SinglePitchRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
     elif (typ == 'Sheddach'):
-      return SawToothRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
+      return SawToothRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
     elif (typ == 'Flachdach'):
-      return FlatRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
+      return FlatRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
     elif (typ == 'Walmdach'):
-      return HippedRoof(name, alpha, h_first, h_dach, b, l, h, address=address)
+      return HippedRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
     elif (typ == 'Mansarddach'):
       raise ValueError('Mansarddach not yet implemented')
     else:

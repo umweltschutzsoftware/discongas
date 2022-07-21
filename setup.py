@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
   name='discongas',
-  version='1.1.2',
+  version='1.1.3',
   description='Implementation of VDI 3781 Part 4 to compute the discharge conditions for exhaust gases of small and medium combustion systems and other installations.',
   author='Ingenieurbüro Richters & Hüls',
   author_email='info@richtershuels.de',
