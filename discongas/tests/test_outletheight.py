@@ -206,6 +206,7 @@ def test_outputcontent():
   assert(d['Data']['G1']['H_A1'] == 1.8)
   assert(d['Data']['G1']['E_Zone'] == 15)
   assert(d['Data']['G1']['Type'] == 'Flachdach')
+  assert(d['Data']['G1']['Hoehe'] == 225.7)
 
   # Parameters for G3
   assert(d['Data']['G3']['L_RZ'] == 17.3)

@@ -191,7 +191,7 @@ class Roof(ABC):
       "H_E1": -1,
       "H_E2": -1,
       "H_E2T": -1,
-      "Hoehe": -1,
+      "Hoehe": self.h,
       "H_F": -1,
       "H_B": self.H_B,
       "E_Zone": self.exposure_zone(),
