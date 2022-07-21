@@ -109,6 +109,7 @@ class Model():
       if 'H_F' in dur.keys():
         ur = dur['r']
         hH_E2 = self.sourceroof.H_E2(dur['H_F'])
+        self.__add_data(self.sourceroof, "H_B", self.sourceroof.H_B)
         hH_E2T = 0
         heightdifference = ur.h - self.sourceroof.h
         if heightdifference != 0:

@@ -207,6 +207,7 @@ def test_outputcontent():
   assert(d['Data']['G1']['E_Zone'] == 15)
   assert(d['Data']['G1']['Type'] == 'Flachdach')
   assert(d['Data']['G1']['Hoehe'] == 225.7)
+  assert(d['Data']['G1']['H_B'] == 1)
 
   # Parameters for G3
   assert(d['Data']['G3']['L_RZ'] == 17.3)
@@ -218,7 +219,6 @@ def test_outputcontent():
   assert(d['Data']['G8']['H_E2'] == 0)
   assert(d['Data']['G8']['H_E2T'] == -3.1)
   assert(d['Data']['G8']['H_F'] == 6)
-  
 
 def test_fromcsv():
   testfilepath = 'discongas/tests/testfiles/parameter.csv'
