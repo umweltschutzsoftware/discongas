@@ -130,4 +130,4 @@ def referencelevel(nominalheatoutput, H_F, H_First, solidfuel=True, thirtyfirstb
         H_B = 3
       else: 
         H_B = 4
-  return round((H_F - H_First) + H_B, 1)
+  return round((H_F - H_First) + H_B, 1), H_B

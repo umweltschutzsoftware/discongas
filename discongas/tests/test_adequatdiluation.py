@@ -12,4 +12,4 @@ def test_exposurezone():
 
 def test_referencelevel():
   # test according to annax A1.3.2
-  assert(referencelevel(15, 8.6, 10.4) == -0.8)
+  assert(referencelevel(15, 8.6, 10.4) == -0.8, 1)
