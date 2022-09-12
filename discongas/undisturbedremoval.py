@@ -78,6 +78,8 @@ class Roof(ABC):
     self.contiguous = False
     self.address = address
     self.h = h
+    self.vH_1 = -1
+    self.vH_2 = -1
 
   def L_RZ(self, beta):
     """
@@ -197,7 +199,9 @@ class Roof(ABC):
       "E_Zone": self.exposure_zone(),
       "Address": self.address,
       "Type": t,
-      "Name": self.name
+      "Name": self.name,
+      "H_1":-1,
+      "H_2":-1
     }
 
 
@@ -228,6 +232,7 @@ class SymmetricPitchedRoof(Roof):
 
   def H_A1(self, a):
     H_1, H_2 = self.zone(a)
+    self.vH_1, self.vH_2 = H_1, H_2
     H_S1 = min(H_1, H_2)
     return round(H_S1 + self.H_U, 1)
 
@@ -236,6 +241,7 @@ class FlatRoof(Roof):
     # 6.2.1 Eq. 8
     spr = SymmetricPitchedRoof.from_roof(self)
     H_A1 = spr.H_A1(a)
+    self.vH_1, self.vH_2 = spr.vH_1, spr.vH_2
     H_A1F = round(1.3*((self.H_First**2)**(1./3.))+self.H_U,1)
     return min(H_A1, H_A1F)
 
@@ -247,6 +253,7 @@ class AsymmetricPitchedRoof(Roof):
   def H_A1(self, a):
     # 6.2.1.2.4
     spr = SymmetricPitchedRoof.from_roof(self)
+    self.vH_1, self.vH_2 = spr.vH_1, spr.vH_2
     return spr.H_A1(a)
 
   def H_2(self):
@@ -262,6 +269,7 @@ class SinglePitchRoof(Roof):
       c=(self.b/2-a)*(1-self.alpha/20)
     H_1 = (a+c)*math.tan(20*math.pi/180)
     H_2 = self.H_2()
+    self.vH_1, self.vH_2 = H_1, H_2
     H_S1 = min(H_1, H_2)
     return round(H_S1 + self.H_U, 1)
 
@@ -273,7 +281,9 @@ class SawToothRoof(Roof):
     fr = FlatRoof.from_roof(self)
     cfr = copy.copy(fr)
     cfr.H_Dach=0
-    return cfr.H_A1(a)
+    r = cfr.H_A1(a)
+    self.vH_1, self.vH_2 = cfr.vH_1, cfr.vH_2
+    return r
   
   def H_2(self):
     fr = FlatRoof.from_roof(self)
