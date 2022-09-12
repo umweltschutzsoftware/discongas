@@ -64,6 +64,8 @@ class Model():
   def heightbyundisturbedremoval(self):
     H_A1 = self.sourceroof.H_A1(self.a)
     self.__add_data(self.sourceroof, "H_A1", H_A1)
+    self.__add_data(self.sourceroof, "H_1", self.sourceroof.vH_1)
+    self.__add_data(self.sourceroof, "H_2", self.sourceroof.vH_2)
 
     H_A2 = -sys.maxsize
     for key in self.upstreamroofs.keys():

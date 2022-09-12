@@ -171,6 +171,8 @@ def test_output():
     assert('H_E2T' in dd[k].keys())
     assert('H_F' in dd[k].keys())
     assert('Hoehe' in dd[k].keys())
+    assert('H_1' in dd[k].keys())
+    assert('H_2' in dd[k].keys())
 
 def test_outputcontent():
   sr = FlatRoof('G1', 0, 6.5, 0, 7.5, 10.7, 225.7, nominalheatoutput=15)
@@ -208,6 +210,8 @@ def test_outputcontent():
   assert(d['Data']['G1']['Type'] == 'Flachdach')
   assert(d['Data']['G1']['Hoehe'] == 225.7)
   assert(d['Data']['G1']['H_B'] == 1)
+  assert(d['Data']['G1']['H_1'] != -1)
+  assert(d['Data']['G1']['H_2'] != -1)
 
   # Parameters for G3
   assert(d['Data']['G3']['L_RZ'] == 17.3)
