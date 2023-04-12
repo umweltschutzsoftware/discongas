@@ -9,40 +9,9 @@ from abc import ABC, abstractmethod
 class Roof(ABC):
   @classmethod
   def from_roof(cls, orig):
-    return cls(orig.name, orig.alpha, orig.H_First, orig.H_Dach, orig.b, orig.l, orig.h, orig.nominalheatoutput, orig.ratedthermalinput, orig.alpha_O, orig.b_O, orig.address)
+    return cls(orig.name, orig.alpha, orig.H_First, orig.H_Dach, orig.b, orig.l, orig.h, orig.alpha_O, orig.b_O, orig.address)
 
-  @classmethod
-  def from_dict(cls, d):
-    typ = d['typ']
-    name = d['id']
-    alpha = d['alpha']
-    l = d['l']
-    b = d['b']
-    h_dach = d['h_dach']
-    h_first = d['h_first']
-    h = d['hoehe']
-    address = d['adresse']
-    qf = d['qf']
-    qn = d['qn']
-
-    if (typ == 'Satteldach'):
-      return SymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
-    elif (typ == 'Asymetrisches Satteldach'):
-      return AsymmetricPitchedRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
-    elif (typ == 'Pultdach'):
-      return SinglePitchRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
-    elif (typ == 'Sheddach'):
-      return SawToothRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
-    elif (typ == 'Flachdach'):
-      return FlatRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
-    elif (typ == 'Walmdach'):
-      return HippedRoof(name, alpha, h_first, h_dach, b, l, h, address=address, nominalheatoutput=qn, ratedthermalinput=qf)
-    elif (typ == 'Mansarddach'):
-      raise ValueError('Mansarddach not yet implemented')
-    else:
-      raise ValueError('Unknown roof type \"{}\"'.format(typ))
-
-  def __init__(self, name, alpha, H_First, H_Dach, b, l, h, nominalheatoutput=400, ratedthermalinput=0.9, alpha_O=None, b_O=None, address=None):
+  def __init__(self, name, alpha, H_First, H_Dach, b, l, h, alpha_O=None, b_O=None, address=None):
     """
     The roof constructor.
 
@@ -53,7 +22,6 @@ class Roof(ABC):
     :param b: width of the buildings gable, or the side of the building in direction to the building with the outlet. In case of a mansard roof, this is the width of the lower roof. (in m):
     :param l: length of the building. (in m):
     :param h: height of the ground of the building of the roof. (in m):
-    :param nominalheatoutput: nominal heat output. Default: 400 (in kW):
     :param ratedthermalinput: Rated thermal input. Default 0.9 (in MW):
     :param alpha_O: in case of a mansard roof, this is the angle of the upper roof. Default: None (in degree):
     :param b_O: in case of a mansard roof, this is the width of the upper roof. Default: None (in m):
@@ -64,9 +32,6 @@ class Roof(ABC):
     self.alpha = alpha
     self.H_Dach = H_Dach
     self.H_First = H_First
-    self.nominalheatoutput = nominalheatoutput
-    self.ratedthermalinput = ratedthermalinput
-    self.H_U = additiveterm(nominalheatoutput, ratedthermalinput)
     self.gamma, self.f = roofpitchcorrection(self.alpha)
     self.H_B = -1
     self.b = b
@@ -78,8 +43,6 @@ class Roof(ABC):
     self.contiguous = False
     self.address = address
     self.h = h
-    self.vH_1 = -1
-    self.vH_2 = -1
 
   def L_RZ(self, beta):
     """
@@ -95,6 +58,29 @@ class Roof(ABC):
     else:
       L_RZ = 6*self.H_First
     return round(L_RZ,1)
+  
+  def p(self, l_A, l_RZ):
+    """
+    Interpolation parameter for determining the height of the recirculation zone
+
+    :param l_A: horizontal distance of the exhaust gas discharge system from an upstream building (in m):
+    :param l_RZ: Length of the recirculation zone (in m):
+
+    :return: p (in m)
+    """
+    return math.sqrt(1-((l_A*l_A)/(l_RZ*l_RZ)))
+  
+  def H_S2(self, l_A, l_RZ, H_First):
+    """
+    Calculated exhaust gas discharge systems height above the ridge witouht an additive term with upstream buildings
+
+    :param l_A: horizontal distance of the exhaust gas discharge system from an upstream building (in m):
+    :param l_RZ: Length of the recirculation zone (in m):
+    :param H_First: ridge height of the building with the outlet (in m):
+
+    :return: H_S2 (in m)
+    """
+    return self.p(l_A, l_RZ)*(self.H_First+self.H_2())-H_First
 
   def H_A2(self, beta, l_A, H_First, H_U):
     """
@@ -108,46 +94,43 @@ class Roof(ABC):
     :return: H_A2 (in m)
     """
     l_RZ = self.L_RZ(beta)
-    p = math.sqrt(1-((l_A*l_A)/(l_RZ*l_RZ)))
-    H_2 = self.H_2()
-    H_S2 = p*(self.H_First+self.H_2())-H_First
+    H_S2 = self.H_S2(l_A, l_RZ, H_First)
     return round(H_S2 + H_U, 1)
-
-  def H_E1(self):
+  
+  def H_A2T(self, beta, l_A, H_First, H_U, h):
     """
-    Minimum height of the exhaust gas discharge system above the terrain surface
+    Required height of the exhaust gas discharge systems outlet above the ridge for undisturbed removal of the exhaust gas due to hillside location of a building
 
-    :return: H_E1 (in m)
-    """
-    if self.ratedthermalinput < 1:
-      return 0
-    return 10 - self.H_First
+    :param beta: horizontal angle between an upstream building an the direction of the exhaust gas discharge system (in m):
+    :param l_A: horizontal distance of the exhaust gas discharge system from an upstream building (in m):
+    :param H_First: ridge height of the building with the outlet (in m):
+    :param H_U: correction value of the building with the outlet (in m):
+    :param h: height of the source roof (in m):
 
-  def H_E2(self, H_F):
+    :return: H_A2T (in m)
     """
-    Required outlet height above the ridge based on the reference level
-
-    :return: H_E2 (in m)
-    """
-    rlevel, self.H_B = referencelevel(self.nominalheatoutput, H_F, self.H_First)
-    return rlevel
-
-  def exposure_zone(self):
-    """
-    Exposure zone of the exhaust gas discharge system
-
-    :return: radius of the exposure zone (in m)
-    """
-    return exposurezone(self.nominalheatoutput)
+    heightdifference = self.h - h
+    return round(self.H_A2(beta, l_A, H_First, H_U) + heightdifference, 1)
 
   @abstractmethod
-  def H_A1(self, a):
+  def H_A1(self, a, H_U):
     """
     Required height of the exhaust gas discharge systems outlet for undisturbed removal of exhaust gas for a single building.
 
     :param a: horizontal distance beween the centre of the outlet cross-section and the ridge (in m):
 
     :return: height H_A1 (in m)
+    """
+    pass
+
+  @abstractmethod
+  def H_1(self, a):
+    """
+    height of the recirculation zone (based on he ridge height) as a function of the distance a
+
+    :param a: horizontal distance beween the centre of the outlet cross-section and the ridge (in m):
+
+    :return: height H_1 (in m)
     """
     pass
   
@@ -160,50 +143,32 @@ class Roof(ABC):
     """
     pass
 
-  def as_dict(self):
-    t = ''
-    if (type(self) == SymmetricPitchedRoof):
-      t = 'Satteldach'
-    elif (type(self) == AsymmetricPitchedRoof):
-      t = 'Asymetrisches Satteldach'
-    elif (type(self) == SinglePitchRoof):
-      t = 'Pultdach'
-    elif (type(self) == SawToothRoof):
-      t = 'Sheddach'
-    elif (type(self) == FlatRoof):
-      t = 'Flachdach'
-    elif (type(self) == HippedRoof):
-      t = 'Walmdach'
-    elif (type(self) == MansardRoof):
-      t = 'Mansarddach'
+  def H_E1(self, ratedthermalinput):
+    """
+    Minimum height of the exhaust gas discharge system above the terrain surface
 
-    return {
-      "Alpha": self.alpha,
-      "H_First": self.H_First,
-      "H_Dach": self.H_Dach,
-      "L": self.l,
-      "B": self.b,
-      "A": -1,
-      "L_A": -1,
-      "Beta": -1,
-      "L_RZ": -1,
-      "H_A1": -1,
-      "H_A2": -1,
-      "H_A2T": -1,
-      "H_E1": -1,
-      "H_E2": -1,
-      "H_E2T": -1,
-      "Hoehe": self.h,
-      "H_F": -1,
-      "H_B": self.H_B,
-      "E_Zone": self.exposure_zone(),
-      "Address": self.address,
-      "Type": t,
-      "Name": self.name,
-      "H_1":-1,
-      "H_2":-1
-    }
+    :return: H_E1 (in m)
+    """
+    if ratedthermalinput < 1:
+      return 0
+    return 10 - self.H_First
 
+  def H_E2(self, H_F, H_B, H_First):
+    """
+    Required outlet height above the ridge based on the reference level
+
+    :return: H_E2 (in m)
+    """
+    return round((H_F - H_First) + H_B, 1)
+  
+  def H_E2T(self, H_F, H_B, H_First, h):
+    """
+    Required outlet height above the ridge based on the reference level
+
+    :return: H_E2T (in m)
+    """
+    heightdifference = self.h - h
+    return round(self.H_E2(H_F, H_B, H_First) + heightdifference, 1)
 
 class SymmetricPitchedRoof(Roof):
   def H_2(self):
@@ -212,78 +177,80 @@ class SymmetricPitchedRoof(Roof):
     else:
       f = self.alpha/20*0.85
       return (1+f)*self.b/2*math.tan(20*math.pi/180)-self.H_Dach
-
-  def zone(self, a):
-    if self.alpha>=20:
-      # 6.2.1 Eq. 1 - 4
-      if self.f is None:
-        raise TypeError("f needs to be defined if roof angle alpha is at least 20 degree.")
-      if self.gamma is None:
-        raise TypeError("gamma needs to be defined if roof angle alpha is at least 20 degree.")
-      H_1 = a * math.tan((self.alpha-self.gamma)*math.pi/180)
-      H_2 = self.H_2()
+    
+  def H_1(self, a):
+    if self.alpha >= 20:
+      return a * math.tan((self.alpha-self.gamma)*math.pi/180)
     else:
-      # 6.2.1 Eq. 5 - 7
-      if self.b is None:
-        raise TypeError("The width b needs to be defined if roof angle alpha is less than 20 degree.")
-      H_1 = (a+self.b/2)*math.tan(20*math.pi/180)-self.H_Dach
-      H_2 = self.H_2()
-    return H_1, H_2
+      return (a+self.b/2)*math.tan(20*math.pi/180)-self.H_Dach
 
-  def H_A1(self, a):
-    H_1, H_2 = self.zone(a)
-    self.vH_1, self.vH_2 = H_1, H_2
+  def H_A1(self, a, H_U=0.4):
+    H_1 = self.H_1(a)
+    H_2 = self.H_2()
     H_S1 = min(H_1, H_2)
-    return round(H_S1 + self.H_U, 1)
+    return round(H_S1 + H_U, 1)
 
 class FlatRoof(Roof):
-  def H_A1(self, a):
+  def H_A1(self, a, H_U=0.4):
     # 6.2.1 Eq. 8
     spr = SymmetricPitchedRoof.from_roof(self)
     H_A1 = spr.H_A1(a)
-    self.vH_1, self.vH_2 = spr.vH_1, spr.vH_2
-    H_A1F = round(1.3*((self.H_First**2)**(1./3.))+self.H_U,1)
+    H_A1F = round(1.3*((self.H_First**2)**(1./3.))+H_U,1)
     return min(H_A1, H_A1F)
+  
+  def H_1(self, a):
+    spr = SymmetricPitchedRoof.from_roof(self)
+    return spr.H_1(a)
 
   def H_2(self):
     spr = SymmetricPitchedRoof.from_roof(self)
     return spr.H_2()
 
 class AsymmetricPitchedRoof(Roof):
-  def H_A1(self, a):
+  def H_A1(self, a, H_U=0.4):
     # 6.2.1.2.4
     spr = SymmetricPitchedRoof.from_roof(self)
-    self.vH_1, self.vH_2 = spr.vH_1, spr.vH_2
-    return spr.H_A1(a)
+    return spr.H_A1(a, H_U)
+
+  def H_1(self, a):
+    spr = SymmetricPitchedRoof.from_roof(self)
+    return spr.H_1(a)
 
   def H_2(self):
     spr = SymmetricPitchedRoof.from_roof(self)
     return spr.H_2()
 
 class SinglePitchRoof(Roof):
-  def H_A1(self, a):
+  def H_A1(self, a, H_U=0.4):
+    H_1 = self.H_1(a)
+    H_2 = self.H_2()
+    H_S1 = min(H_1, H_2)
+    return round(H_S1 + H_U, 1)
+  
+  def H_1(self, a):
     # 6.2.1.2.5
     if (self.alpha >= 20):
       c = 0
     else: 
       c=(self.b/2-a)*(1-self.alpha/20)
-    H_1 = (a+c)*math.tan(20*math.pi/180)
-    H_2 = self.H_2()
-    self.vH_1, self.vH_2 = H_1, H_2
-    H_S1 = min(H_1, H_2)
-    return round(H_S1 + self.H_U, 1)
+    return (a+c)*math.tan(20*math.pi/180)
 
   def H_2(self):
     return self.b/2*math.tan(20*math.pi/180)
 
 class SawToothRoof(Roof):
-  def H_A1(self, a):
+  def H_A1(self, a, H_U=0.4):
     fr = FlatRoof.from_roof(self)
     cfr = copy.copy(fr)
     cfr.H_Dach=0
-    r = cfr.H_A1(a)
-    self.vH_1, self.vH_2 = cfr.vH_1, cfr.vH_2
+    r = cfr.H_A1(a, H_U)
     return r
+  
+  def H_1(self,a):
+    fr = FlatRoof.from_roof(self)
+    cfr = copy.copy(fr)
+    cfr.H_Dach=0
+    return cfr.H_1(a)
   
   def H_2(self):
     fr = FlatRoof.from_roof(self)
@@ -292,14 +259,18 @@ class SawToothRoof(Roof):
     return cfr.H_2()
 
 class HippedRoof(Roof):
-  def H_A1(self, a):
+  def H_A1(self, a, H_U=0.4):
     spr = SymmetricPitchedRoof.from_roof(self)
-    H_A1 = spr.H_A1(a)
+    H_A1 = spr.H_A1(a, H_U)
 
-    H_S1 = H_A1 - self.H_U
+    H_S1 = H_A1 - H_U
     if self.l/self.b <= 1.2:
-      return round(H_S1*0.6+self.H_U, 1)
+      return round(H_S1*0.6+H_U, 1)
     return H_A1
+  
+  def H_1(self, a):
+    spr = SymmetricPitchedRoof.from_roof(self)
+    return spr.H_1(a)
 
   def H_2(self):
     spr = SymmetricPitchedRoof.from_roof(self)
@@ -321,17 +292,18 @@ class MansardRoof(Roof):
     spru.H_Dach = H_DachU
     return spru
 
-  def H_A1(self, a):
-    spro = self.__rO()
-    H_1O, H_2O = spro.zone(a)
-
-    spru = self.__rU()
-    H_1U, H_2U = spru.zone(a)
-
-    H_1 = self.b_O/self.b*H_1O+(1-self.b_O/self.b)*H_1U
+  def H_A1(self, a, H_U=0.4):
+    H_1 = self.H_1(a)
     H_2 = self.H_2()
     H_S1 = min(H_1, H_2)
-    return round(H_S1 + self.H_U, 1)
+    return round(H_S1 + H_U, 1)
+  
+  def H_1(self, a):
+    spro = self.__rO()
+    spru = self.__rU()
+    H_1O = spro.H_1(a)
+    H_1U = spru.H_1(a)
+    return self.b_O/self.b*H_1O+(1-self.b_O/self.b)*H_1U
 
   def H_2(self):
     spro = self.__rO()

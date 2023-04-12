@@ -79,28 +79,3 @@ def test_recirculationheightupstreambuilding():
   # Building 5
   r = SymmetricPitchedRoof(name="", alpha=32, H_First=11.0, H_Dach=4.9, b=18.6, l=15.6, h=0)
   assert(r.H_A2(beta=76, l_A=16.5, H_First=10.4, H_U=0.4) == 0.3)
-
-def test_fromdict():
-  d = {'fid': 8,
-  'hoehe': 223.6,
-  'id': 'G1',
-  'alpha': 0,
-  'l': 10.7,
-  'b': 7.5,
-  'schornstein': True,
-  'typ': 'Flachdach',
-  'a': 0,
-  'h_dach': 0,
-  'h_first': 6.5,
-  'l_a': 0.0,
-  'beta': 0.0,
-  'adresse': 'a1',
-  'qn': 10,
-  'qf': 0.9 }
-
-  fr = Roof.from_dict(d)
-  assert(type(fr) == FlatRoof)
-
-  d['typ'] = 'Satteldach'
-  sr = Roof.from_dict(d)
-  assert(type(sr) == SymmetricPitchedRoof)
