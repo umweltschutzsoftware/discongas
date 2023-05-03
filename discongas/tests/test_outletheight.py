@@ -168,7 +168,7 @@ def test_outputcontent():
   assert(m.H_source == m.H_A_source)
   assert(m.H_A_source.name == "G3")
 
-  assert(m.H_E_source.name == "G8")
+  assert(m.H_E_source.name == "G1")
 
   assert(len(m.upstreamroofs) == 2)
 
@@ -198,3 +198,13 @@ def test_outputcontent():
       assert(roof.H_E2(H_F, m.H_B, m.sourceroof.H_First) == 0.5)
       assert(roof.H_E2T(H_F, m.H_B, m.sourceroof.H_First, m.sourceroof.h) == -3.1)
       assert(H_F == 6)
+
+def test_heightdifference():
+  sr = SymmetricPitchedRoof("G1",17.9, 4.74, 1.92, 11.9, 13.3, 281.48)
+
+  ur = SymmetricPitchedRoof("G2", 18.4, 4.74, 3, 18, 14, 280.41)
+
+  m = Model(3, sr)
+  m.add_upstreamroof(73.4, 9.1, ur)
+
+  assert(m.height() == 1.7)

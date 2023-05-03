@@ -79,9 +79,9 @@ class Model():
     self.H_A2T_source, H_A2T_beta, H_A2T_lA, _ = H_A2T_values
     H_A2T = self.H_A2T_source.H_A2T(H_A2T_beta, H_A2T_lA, self.sourceroof.H_First, self.H_U, self.sourceroof.h) if self.H_A2T_source is not None else -sys.maxsize
 
-    H_A_values = [H_A1, H_A2, H_A2T]
+    H_A_values = [H_A1, H_A2] if self.H_A2T_source is None else [H_A1, H_A2T]
     imax = np.argmax(H_A_values)
-    self.H_A_source = [self.H_A1_source, self.H_A2_source, self.H_A2T_source][imax]
+    self.H_A_source = [self.H_A1_source, self.H_A2_source][imax] if self.H_A2T_source is None else [self.H_A1_source, self.H_A2T_source][imax]
 
     return H_A_values[imax]
   
@@ -128,10 +128,9 @@ class Model():
     self.H_E2T_source,_ ,_ , H_F = H_E2T_values
     H_E2T = self.H_E2T_source.H_E2T(H_F, self.H_B, self.sourceroof.H_First, self.sourceroof.h) if self.H_E2T_source is not None else -sys.maxsize
 
-    H_E_values = [H_E1, H_E2, H_E2T]
-    print(H_E_values)
+    H_E_values = [H_E1, H_E2] if self.H_E2T_source is None else [H_E1, H_E2T]
     imax = np.argmax(H_E_values)
-    self.H_E_source = [self.H_E1_source, self.H_E2_source, self.H_E2T_source][imax]
+    self.H_E_source = [self.H_E1_source, self.H_E2_source][imax] if self.H_E2T_source is None else [self.H_E1_source, self.H_E2T_source][imax]
 
     return H_E_values[imax]
 
